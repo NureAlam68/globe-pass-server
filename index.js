@@ -28,6 +28,7 @@ async function run() {
 
     const database = client.db("visaDB");
     const visaCollection = database.collection("visas");
+    const applicationCollection = database.collection("applications");
 
     app.get("/visas", async (req, res) => {
       const cursor = visaCollection.find();
@@ -51,6 +52,29 @@ async function run() {
     app.post("/visas", async (req, res) => {
       const newVisa = req.body;
       const result = await visaCollection.insertOne(newVisa);
+      res.send(result);
+    });
+
+    // Fetch applications for the logged-in user
+    app.get("/applications/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email };
+      const result = await applicationCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    // Add a new application
+    app.post("/applications", async (req, res) => {
+      const application = req.body;
+      const result = await applicationCollection.insertOne(application);
+      res.send(result);
+    });
+
+    // Delete an application
+    app.delete("/applications/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await applicationCollection.deleteOne(query);
       res.send(result);
     });
 
