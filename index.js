@@ -31,8 +31,9 @@ async function run() {
     const applicationCollection = database.collection("applications");
 
     app.get("/visas", async (req, res) => {
-      const cursor = visaCollection.find();
-      const result = await cursor.toArray();
+      const visaType = req.query.type;
+      const query = visaType ? { visaType } : {};
+      const result = await visaCollection.find(query).toArray();
       res.send(result);
     });
 
@@ -84,7 +85,13 @@ async function run() {
     // Fetch applications for the logged-in user
     app.get("/applications/:email", async (req, res) => {
       const email = req.params.email;
+      const {countryName} = req.query;
       const query = { email };
+
+      if (countryName) {
+        query.countryName = { $regex: countryName, $options: "i" };
+      }
+
       const result = await applicationCollection.find(query).toArray();
       res.send(result);
     });
