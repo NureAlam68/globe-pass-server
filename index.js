@@ -45,7 +45,7 @@ async function run() {
     });
 
     app.get("/latest-visas", async (req, res) => {
-      const cursor = visaCollection.find().sort({ _id: -1 }).limit(6);
+      const cursor = visaCollection.find().sort({ _id: -1 }).limit(8);
       const result = await cursor.toArray();
       res.send(result);
     });
